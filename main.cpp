@@ -1,7 +1,10 @@
 #include <iostream>
 
+#include "server.h"
+
 int main() {
-    std::cout << "Hello, World!" << std::endl;
+    int port = 1234;
+    start_server(port);
 
     return 0;
 }

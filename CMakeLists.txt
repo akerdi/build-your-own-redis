@@ -3,4 +3,4 @@ project(learn_redis)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(learn_redis main.cpp)
+add_executable(learn_redis main.cpp server.cpp)
