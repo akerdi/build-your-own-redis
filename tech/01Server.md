@@ -1,4 +1,4 @@
-# Start socket
+# 套接字 | socket
 
 本章主要是实现Socket连接，根据`man socket`查看到socket 原型为: `int(*socket)(int domain, int type, int protocol)`.
 
