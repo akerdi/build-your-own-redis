@@ -16,8 +16,9 @@ Platform: Linux/Mac
 
 ## Goal
 
-+ [x] Start socket
-+ [ ] Nonblock with poll
++ [x] Start Socket
++ [ ] Protocol Parsing
++ [ ] Nonblock Poll
 + [ ] Implement: get / insert / del
 + [ ] Integrate [HashTable](https://github.com/akerdi/build-your-own-hash-table)
 + More on...
