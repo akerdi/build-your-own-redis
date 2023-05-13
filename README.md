@@ -18,8 +18,8 @@
 
 ## 目标
 
-+ [x] 套接字
-+ [ ] 协议解析
++ [x] [套接字](./tech/01Server.md)
++ [x] [协议解析](./tech/02Protocol.md)
 + [ ] 不阻塞 Poll
 + [ ] 实现: 获取 / 插入 / 删除
 + [ ] 组合 [HashTable](https://github.com/akerdi/build-your-own-hash-table)
