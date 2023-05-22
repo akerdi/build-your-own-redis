@@ -101,7 +101,7 @@ static void state_res(Conn *conn);
 const size_t k_max_args = 1024;
 
 static int32_t parse_req(
-    const uint8_t* data, size_t len, vector<string>& cmds
+        const uint8_t* data, size_t len, vector<string>& cmds
 ) {
     if (len < 4) return -1;
 
@@ -136,7 +136,7 @@ enum {
 
 static map<string, string> g_map;
 static uint32_t do_get(
-    const vector<string>& cmds, uint8_t* res, uint32_t* reslen
+        const vector<string>& cmds, uint8_t* res, uint32_t* reslen
 ) {
     if (!g_map.count(cmds[1])) {
         return RES_NX;
@@ -148,13 +148,13 @@ static uint32_t do_get(
     return RES_OK;
 }
 static uint32_t do_set(
-    const vector<string>& cmds, uint8_t* res, uint32_t* reslen
+        const vector<string>& cmds, uint8_t* res, uint32_t* reslen
 ) {
     g_map[cmds[1]] = cmds[2];
     return RES_OK;
 }
 static uint32_t do_del(
-    const vector<string>& cmds, uint8_t* res, uint32_t* reslen
+        const vector<string>& cmds, uint8_t* res, uint32_t* reslen
 ) {
     g_map.erase(cmds[1]);
     return RES_OK;
@@ -165,8 +165,8 @@ static bool cmd_is(const string& word, const char* cmd) {
 }
 
 static int32_t do_request(
-    const uint8_t* req, uint32_t reqlen,
-    uint32_t* rescode, uint8_t* res, uint32_t* reslen
+        const uint8_t* req, uint32_t reqlen,
+        uint32_t* rescode, uint8_t* res, uint32_t* reslen
 ) {
     vector<string> cmds;
     if (0 != parse_req(req, reqlen, cmds)) {
@@ -211,8 +211,8 @@ static bool try_one_request(Conn* conn) {
     uint32_t rescode = 0;
     uint32_t wlen = 0;
     int32_t err = do_request(
-        &conn->rbuf[4], len,
-        &rescode, &conn->wbuf[4+4], &wlen
+            &conn->rbuf[4], len,
+            &rescode, &conn->wbuf[4+4], &wlen
     );
     if (err) {
         conn->state == STATE_END;

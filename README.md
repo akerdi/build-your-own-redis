@@ -21,6 +21,6 @@
 + [x] [套接字](./tech/01Server.md)
 + [x] [协议解析](./tech/02Protocol.md)
 + [x] [非阻塞](./tech/03NonBlock.md)
-+ [ ] 实现: 获取 / 插入 / 删除
++ [x] [实现: 获取 / 插入 / 删除](./tech/04Operate.md)
 + [ ] 组合 [HashTable](https://github.com/akerdi/build-your-own-hash-table)
 + 更多
