@@ -20,5 +20,5 @@ Platform:   Linux/Mac
 + [x] [Protocol Parsing](./tech/02Protocol.md)
 + [x] [NonBlock](./tech/03NonBlock.md)
 + [x] [Implement: get / insert / del](./tech/04Operate.md)
-+ [ ] Integrate [HashTable](https://github.com/akerdi/build-your-own-hash-table)
-+ More on...
++ [x] Integrate [HashTable](https://github.com/akerdi/build-your-own-hash-table)
++ More, Coming soon...

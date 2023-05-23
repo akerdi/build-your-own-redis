@@ -1,0 +1,3 @@
+[submodule "vendor/hashtable"]
+	path = vendor/hashtable
+	url = git@github.com:akerdi/build-your-own-hash-table.git

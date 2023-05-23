@@ -4,7 +4,6 @@
 
 #include <iostream>
 #include <vector>
-#include <map>
 using namespace std;
 
 #include <unistd.h>
@@ -18,39 +17,21 @@ using namespace std;
 #include <fcntl.h>
 #include <poll.h>
 
-static void msg(const char* msg) {
-    fprintf(stderr, "%s\n", msg);
-}
-
-static void die(const char* msg) {
-    int err = errno;
-    fprintf(stderr, "[%d] %s\n", err, msg);
-    abort();
-}
-
-static void fd_set_nb(int fd) {
-    errno = 0;
-    int flags = fcntl(fd, F_GETFL, 0);
-    if (errno) {
-        die("fcntl error");
-        return;
-    }
-
-    flags |= O_NONBLOCK;
-
-    errno = 0;
-    fcntl(fd, F_SETFL, flags);
-    if (errno) {
-        die("fcntl error");
-    }
-}
+#include <HashTable.h>
 
 const size_t k_max_msg = 4096;
+const size_t k_max_args = 1024;
+static HashTable* g_map;
 
 enum {
     STATE_REQ = 0,
     STATE_RES = 1,
     STATE_END = 2, // mark the connection for deletion
+};
+enum {
+    RES_OK = 0,
+    RES_ERR = 1,
+    RES_NX = 2,
 };
 
 struct Conn {
@@ -64,6 +45,12 @@ struct Conn {
     size_t wbuf_sent = 0;
     uint8_t wbuf[4+k_max_msg];
 };
+
+static void fd_set_nb(int fd);
+static void die(const char* msg);
+static void msg(const char* msg);
+static void state_req(Conn *conn);
+static void state_res(Conn *conn);
 
 static void conn_put(vector<Conn*>& fd2conn, Conn* conn) {
     if (fd2conn.size() <= (size_t)conn->fd) {
@@ -95,11 +82,6 @@ static int32_t accept_new_conn(vector<Conn*>& fd2conn, int fd) {
     return 0;
 }
 
-static void state_req(Conn *conn);
-static void state_res(Conn *conn);
-
-const size_t k_max_args = 1024;
-
 static int32_t parse_req(
     const uint8_t* data, size_t len, vector<string>& cmds
 ) {
@@ -128,35 +110,29 @@ static int32_t parse_req(
     return 0;
 }
 
-enum {
-    RES_OK = 0,
-    RES_ERR = 1,
-    RES_NX = 2,
-};
-
-static map<string, string> g_map;
 static uint32_t do_get(
     const vector<string>& cmds, uint8_t* res, uint32_t* reslen
 ) {
-    if (!g_map.count(cmds[1])) {
+    if (!g_map->ht_search(cmds[1].c_str())) {
         return RES_NX;
     }
-    string& val = g_map[cmds[1]];
-    assert(val.size() <= k_max_msg);
-    memcpy(res, val.data(), val.size());
-    *reslen = (uint32_t)val.size();
+    char* val = g_map->ht_search(cmds[1].c_str());
+    uint32_t val_size = sizeof(val);
+    assert(val_size <= k_max_msg);
+    memcpy(res, val, val_size);
+    *reslen = val_size;
     return RES_OK;
 }
 static uint32_t do_set(
     const vector<string>& cmds, uint8_t* res, uint32_t* reslen
 ) {
-    g_map[cmds[1]] = cmds[2];
+    g_map->ht_insert(cmds[1].c_str(), cmds[2].c_str());
     return RES_OK;
 }
 static uint32_t do_del(
     const vector<string>& cmds, uint8_t* res, uint32_t* reslen
 ) {
-    g_map.erase(cmds[1]);
+    g_map->ht_del(cmds[1].c_str());
     return RES_OK;
 }
 
@@ -335,6 +311,8 @@ void start_server(int port) {
     fd_set_nb(fd);
     cout << "Listening at port: " << port << endl;
 
+    g_map = &HashTable::ht_new();
+
     vector<Conn*> fd2conn;
     vector<struct pollfd> poll_args;
     while (true) {
@@ -373,5 +351,31 @@ void start_server(int port) {
         if (poll_args[0].revents) {
             accept_new_conn(fd2conn, fd);
         }
+    }
+}
+
+static void msg(const char* msg) {
+    fprintf(stderr, "%s\n", msg);
+}
+static void die(const char* msg) {
+    int err = errno;
+    fprintf(stderr, "[%d] %s\n", err, msg);
+    abort();
+}
+
+static void fd_set_nb(int fd) {
+    errno = 0;
+    int flags = fcntl(fd, F_GETFL, 0);
+    if (errno) {
+        die("fcntl error");
+        return;
+    }
+
+    flags |= O_NONBLOCK;
+
+    errno = 0;
+    fcntl(fd, F_SETFL, flags);
+    if (errno) {
+        die("fcntl error");
     }
 }
