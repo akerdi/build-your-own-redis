@@ -17,11 +17,11 @@ using namespace std;
 #include <fcntl.h>
 #include <poll.h>
 
-#include <HashTable.h>
+#include <HashTable.hpp>
 
 const size_t k_max_msg = 4096;
 const size_t k_max_args = 1024;
-static HashTable* g_map;
+static HashTable<string>* g_map;
 
 enum {
     STATE_REQ = 0,
@@ -116,7 +116,7 @@ static uint32_t do_get(
     if (!g_map->ht_search(cmds[1].c_str())) {
         return RES_NX;
     }
-    char* val = g_map->ht_search(cmds[1].c_str());
+    string* val = g_map->ht_search(cmds[1].c_str());
     uint32_t val_size = sizeof(val);
     assert(val_size <= k_max_msg);
     memcpy(res, val, val_size);
@@ -311,7 +311,7 @@ void start_server(int port) {
     fd_set_nb(fd);
     cout << "Listening at port: " << port << endl;
 
-    g_map = &HashTable::ht_new();
+    g_map = &HashTable<string>::ht_new();
 
     vector<Conn*> fd2conn;
     vector<struct pollfd> poll_args;
